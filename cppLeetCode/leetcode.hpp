@@ -822,69 +822,6 @@ vector<vector<int>> levelOrder(TreeNode* root) {
     return result;
 }
 
-// https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/
-vector<vector<int>> levelOrderBottom(TreeNode* root) {
-    vector<vector<int>> result;
-    if (root == nullptr) {
-        return result;
-    }
-    queue< pair<TreeNode*, int> > q;
-    q.push(make_pair(root, 0));
-    while (!q.empty()) {
-        TreeNode *node = q.front().first;
-        int level = q.front().second;
-        q.pop();
-        if (level == result.size()) {
-            result.push_back(vector<int> ());
-        }
-        result[level].push_back(node->val);
-        if (node->left) {
-            q.push(make_pair(node->left, level+1));
-        }
-        if (node->right) {
-            q.push(make_pair(node->right, level+1));
-        }
-    }
-    int left = 0;
-    int right = (int)result.size() - 1;
-    while (left < right) {
-        swap(result[left++], result[right--]);
-    }
-    return result;
-}
-
-// https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/
-vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
-    vector<vector<int>>result;
-    if(root == nullptr) {
-        return result;
-    }
-    queue< pair<TreeNode*,int> > q;
-    q.push(make_pair(root,0));
-    while(!q.empty()) {
-        TreeNode *node = q.front().first;
-        int level = q.front().second;
-        q.pop();
-        if(level == result.size())
-            result.push_back(vector<int>());
-        result[level].push_back(node->val);
-        if(node->left)
-            q.push(make_pair(node->left,level+1));
-        if(node->right)
-            q.push(make_pair(node->right,level+1));
-    }
-    for (int i = 0; i < result.size(); i++) {
-        if (i % 2 != 0) {
-            int left = 0;
-            int right = (int)result[i].size() - 1;
-            while (left < right) {
-                swap(result[i][left++], result[i][right--]);
-            }
-        }
-    }
-    return result;
-}
-
 void preOrderTraverseRec(TreeNode *root) {
     if (root != nullptr) {
         cout << root->val  << " ";
@@ -1001,6 +938,98 @@ vector<int> postorderTraverse(TreeNode *root) {
     }
     cout << "postorderTraverse end" << endl;
     return result;
+}
+
+// --------------------------- Medium -------------------------------------
+
+// https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/
+vector<vector<int>> levelOrderBottom(TreeNode* root) {
+    vector<vector<int>> result;
+    if (root == nullptr) {
+        return result;
+    }
+    queue< pair<TreeNode*, int> > q;
+    q.push(make_pair(root, 0));
+    while (!q.empty()) {
+        TreeNode *node = q.front().first;
+        int level = q.front().second;
+        q.pop();
+        if (level == result.size()) {
+            result.push_back(vector<int> ());
+        }
+        result[level].push_back(node->val);
+        if (node->left) {
+            q.push(make_pair(node->left, level+1));
+        }
+        if (node->right) {
+            q.push(make_pair(node->right, level+1));
+        }
+    }
+    int left = 0;
+    int right = (int)result.size() - 1;
+    while (left < right) {
+        swap(result[left++], result[right--]);
+    }
+    return result;
+}
+
+// https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/
+vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
+    vector<vector<int>>result;
+    if(root == nullptr) {
+        return result;
+    }
+    queue< pair<TreeNode*,int> > q;
+    q.push(make_pair(root,0));
+    while(!q.empty()) {
+        TreeNode *node = q.front().first;
+        int level = q.front().second;
+        q.pop();
+        if(level == result.size())
+            result.push_back(vector<int>());
+        result[level].push_back(node->val);
+        if(node->left)
+            q.push(make_pair(node->left,level+1));
+        if(node->right)
+            q.push(make_pair(node->right,level+1));
+    }
+    for (int i = 0; i < result.size(); i++) {
+        if (i % 2 != 0) {
+            int left = 0;
+            int right = (int)result[i].size() - 1;
+            while (left < right) {
+                swap(result[i][left++], result[i][right--]);
+            }
+        }
+    }
+    return result;
+}
+
+// https://leetcode-cn.com/problems/binary-tree-right-side-view/
+vector<int> rightSideView(TreeNode* root) {
+    vector<vector<int>>result;
+    if(root == nullptr) {
+        return vector<int>();
+    }
+    queue< pair<TreeNode*,int> > q;
+    q.push(make_pair(root,0));
+    while(!q.empty()) {
+        TreeNode *node = q.front().first;
+        int level = q.front().second;
+        q.pop();
+        if(level == result.size())
+            result.push_back(vector<int>());
+        result[level].push_back(node->val);
+        if(node->left)
+            q.push(make_pair(node->left,level+1));
+        if(node->right)
+            q.push(make_pair(node->right,level+1));
+    }
+    vector<int>res;
+    for( vector<int> level : result ) {
+        res.push_back(level[level.size()-1]);
+    }
+    return res;
 }
 
 #pragma mark - ListNode
