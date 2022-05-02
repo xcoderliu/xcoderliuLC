@@ -108,6 +108,10 @@ int main(int argc, const char * argv[]) {
     
     simplifyPath("/a//b////c/d//././/..");
     
+    cout << numSquaresQueue(12) << endl;
+    vector<string> ladderDic = {"hot","dot","dog","lot","log","cog"};
+    cout << ladderLength("hit", "cog", ladderDic) << endl;
+    
     getchar();
     return 0;
 }

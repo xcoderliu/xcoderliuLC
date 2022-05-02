@@ -606,6 +606,82 @@ public:
     }
 };
 
+// https://leetcode-cn.com/problems/perfect-squares/
+/*
+ 队列先进先出，所以我们从起点开始每次可以跳到 n - (1->k)^2 的地方
+ 那么就把跳到的节点再push进队列，再出栈继续跳，最短的路径肯定是最先达到走了n步
+*/
+int numSquaresQueue(int n) {
+    queue<pair<int, int> > q;
+    q.push(make_pair(n, 0));
+    vector<bool> visited(n+1,false);
+    visited[n] = true;
+    while (!q.empty()) {
+        int num = q.front().first;
+        int step = q.front().second;
+        q.pop();
+        for (int i = 1;  ; i++) {
+            int temp = num - i * i;
+            if (temp < 0) {
+                break;
+            }
+            if (temp == 0) {
+                return step + 1;
+            }
+            if (!visited[temp]) {
+                q.push(make_pair(temp , step + 1));
+                visited[temp] = true;
+            }
+        }
+    }
+    return 0;
+}
+
+// https://leetcode-cn.com/problems/word-ladder/
+bool laaderVaild(string s, string t) {
+    if(s.size() != t.size()) {
+        return false;
+    }
+    int diff = 0;
+    for (int i = 0; i < s.size(); i++) {
+        if (s.at(i) != t.at(i)) {
+            diff++;
+        }
+    }
+    return diff == 1;
+}
+int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+    if (find(wordList.begin(), wordList.end(), endWord) == wordList.end()) {
+        return 0;
+    }
+    queue<string>q;
+    q.push(beginWord);
+    vector<bool>visited(wordList.size() + 1,false);
+    int res = 0;
+    while (!q.empty()) {
+        int size = (int)q.size();
+        res++; //上一次加的都能pop出去就代表加了一层
+        while (size-- > 0) {
+            string word = q.front();
+            q.pop();
+            for (int i = 0; i < wordList.size(); i++) {
+                if (visited[i]) {
+                    continue;
+                }
+                string wordnew = wordList[i];
+                if (laaderVaild(word,wordnew)) {
+                    if (wordnew.compare(endWord) == 0) {
+                        return res + 1;
+                    }
+                    q.push(wordnew); //能跳到下一个字典的都加入队列
+                    visited[i] = true;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 // https://leetcode-cn.com/problems/group-anagrams/
 vector<vector<string>> groupAnagrams(vector<string>& strs) {
     vector<int*> record;
@@ -1622,6 +1698,13 @@ int integerBreak(int n) {
 }
 
 // https://leetcode-cn.com/problems/perfect-squares/
+/*
+ 定义一个函数f(n)表示我们要求的解。f(n)的求解过程为：
+ f(n) = 1 + min{
+    f(n-1^2), f(n-2^2), f(n-3^2), f(n-4^2), ... , f(n-k^2) //(k为满足k^2<=n的最大的k)
+ }
+ 因为这里面任意一个加上对应(1->k)^2也就是一个数就可以得到 f(n)
+*/
 int numSquares(int n) {
     vector<int> f(n+1, 0);//n+1大小，f[0]为0
     for (int i = 1; i <= n; i++) {//从f[1]开始计算
