@@ -7,11 +7,12 @@
 
 #include <iostream>
 #include <vector>
-#include <set>
 #include <stack>
+#include <set>
 #include <unordered_set>
 #include <map>
 #include <unordered_map>
+#include <queue>
 #include <sstream>
 
 #pragma mark - common
@@ -572,6 +573,39 @@ int numberOfBoomerangs(vector<vector<int>>& points) {
     return result;
 }
 
+// https://leetcode-cn.com/problems/flatten-nested-list-iterator/
+class NestedInteger {
+    vector<NestedInteger> fake;
+public:
+    bool isInteger() {return true;}
+    int getInteger() {return 0;}
+    vector<NestedInteger> &getList() {
+        return fake;
+    }
+};
+class NestedIterator {
+public:
+    vector<int> v;
+    int index = 0;
+    NestedIterator(vector<NestedInteger> &nestedList) {
+        dfs(nestedList);
+    }
+    int next() {
+        return v[index++];
+    }
+    bool hasNext() {
+        if(index==v.size()) return false;
+        else return true;
+    }
+    void dfs(vector<NestedInteger> &nestedList) {
+        for(int i=0;i<nestedList.size();i++) {
+            if(nestedList[i].isInteger())
+                v.push_back(nestedList[i].getInteger());
+            else dfs(nestedList[i].getList());
+        }
+    }
+};
+
 // https://leetcode-cn.com/problems/group-anagrams/
 vector<vector<string>> groupAnagrams(vector<string>& strs) {
     vector<int*> record;
@@ -769,7 +803,7 @@ vector<vector<int>> threeSum(vector<int>& nums) {
 void pre(TreeNode *root, int depth, vector<vector<int>> &result) {
     if (!root) return ;
     if (depth >= result.size())
-        result.push_back(vector<int> {});
+        result.push_back(vector<int> ());
     result[depth].push_back(root->val);
     pre(root->left, depth + 1, result);
     pre(root->right, depth + 1, result);
@@ -784,6 +818,69 @@ vector<vector<int>> levelOrder(TreeNode* root) {
             cout << element << " ";
         }
         cout << "]" << endl;
+    }
+    return result;
+}
+
+// https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/
+vector<vector<int>> levelOrderBottom(TreeNode* root) {
+    vector<vector<int>> result;
+    if (root == nullptr) {
+        return result;
+    }
+    queue< pair<TreeNode*, int> > q;
+    q.push(make_pair(root, 0));
+    while (!q.empty()) {
+        TreeNode *node = q.front().first;
+        int level = q.front().second;
+        q.pop();
+        if (level == result.size()) {
+            result.push_back(vector<int> ());
+        }
+        result[level].push_back(node->val);
+        if (node->left) {
+            q.push(make_pair(node->left, level+1));
+        }
+        if (node->right) {
+            q.push(make_pair(node->right, level+1));
+        }
+    }
+    int left = 0;
+    int right = (int)result.size() - 1;
+    while (left < right) {
+        swap(result[left++], result[right--]);
+    }
+    return result;
+}
+
+// https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/
+vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
+    vector<vector<int>>result;
+    if(root == nullptr) {
+        return result;
+    }
+    queue< pair<TreeNode*,int> > q;
+    q.push(make_pair(root,0));
+    while(!q.empty()) {
+        TreeNode *node = q.front().first;
+        int level = q.front().second;
+        q.pop();
+        if(level == result.size())
+            result.push_back(vector<int>());
+        result[level].push_back(node->val);
+        if(node->left)
+            q.push(make_pair(node->left,level+1));
+        if(node->right)
+            q.push(make_pair(node->right,level+1));
+    }
+    for (int i = 0; i < result.size(); i++) {
+        if (i % 2 != 0) {
+            int left = 0;
+            int right = (int)result[i].size() - 1;
+            while (left < right) {
+                swap(result[i][left++], result[i][right--]);
+            }
+        }
     }
     return result;
 }

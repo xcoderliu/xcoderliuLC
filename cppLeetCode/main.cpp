@@ -65,6 +65,8 @@ int main(int argc, const char * argv[]) {
     inorderTraverse(&one);
     postorderTraverse(&one);
     levelOrder(&one);
+    levelOrderBottom(&one);
+    zigzagLevelOrder(&one);
     //
     //    levelOrder(&one);
     
