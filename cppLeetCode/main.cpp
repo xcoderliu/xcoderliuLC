@@ -112,6 +112,8 @@ int main(int argc, const char * argv[]) {
     vector<string> ladderDic = {"hot","dot","dog","lot","log","cog"};
     cout << ladderLength("hit", "cog", ladderDic) << endl;
     findLadders("hit", "cog", ladderDic);
+    vector<int> nums = {2, 3, 2, 3, 12};
+    topKFrequent(nums,2);
     getchar();
     return 0;
 }

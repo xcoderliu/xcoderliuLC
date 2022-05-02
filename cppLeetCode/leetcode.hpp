@@ -637,6 +637,75 @@ int numSquaresQueue(int n) {
     return 0;
 }
 
+// https://leetcode-cn.com/problems/group-anagrams/
+vector<vector<string>> groupAnagrams(vector<string>& strs) {
+    vector<int*> record;
+    vector<vector<string>> result;
+
+    for (string  str: strs) {
+        int *model = new int [26];
+        memset(model,0,sizeof(int) * 26 );
+        // get the model for current str
+        for (char  c: str) {
+            model[(int)c-97]++;
+        }
+        bool isNew = true;
+        int findIndex = 0;
+        // check is there a new model
+        for (auto modelpre: record) {
+            if (memcmp(model,modelpre, sizeof(int) * 26 ) == 0) {
+                isNew = false;
+                break;
+            }
+            findIndex++;
+        }
+        // new insert
+        if (isNew) {
+            record.push_back(model);
+            vector<string> first;
+            first.push_back(str);
+            result.push_back(first);
+        } else { // push to result
+            delete [] model;
+            result.at(findIndex).push_back(str);
+        }
+    }
+    // clear temp
+    for(vector<int*>::iterator it = record.begin();it != record.end();) {
+        delete []*it;
+        it = record.erase(it);
+    }
+    return result;
+}
+
+// https://leetcode-cn.com/problems/top-k-frequent-elements/
+vector<int> topKFrequent(vector<int>& nums, int k) {
+    unordered_map<int,int> rec;
+    for(int i = 0; i < nums.size();i++) {
+        rec[nums[i]]++;
+    }
+    priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int>>> pq;
+    for (unordered_map<int,int>::iterator it = rec.begin(); it != rec.end(); it++) {
+        if (pq.size() == k) {
+            if (it->second > pq.top().first) {
+                pq.pop();
+                pq.push(make_pair(it->second, it->first));
+            }
+        } else {
+            pq.push(make_pair(it->second, it->first));
+        }
+        
+    }
+    vector<int> result;
+    while (!pq.empty()) {
+        result.push_back(pq.top().second);
+        pq.pop();
+    }
+    return result;
+}
+
+// --------------------------- Hard -------------------------------------
+
 // https://leetcode-cn.com/problems/word-ladder/
 bool laaderVaild(string s, string t) {
     if(s.size() != t.size()) {
@@ -723,47 +792,6 @@ vector<vector<string>> findLadders(string beginWord, string endWord, vector<stri
         }
     }
     return res;
-}
-
-// https://leetcode-cn.com/problems/group-anagrams/
-vector<vector<string>> groupAnagrams(vector<string>& strs) {
-    vector<int*> record;
-    vector<vector<string>> result;
-
-    for (string  str: strs) {
-        int *model = new int [26];
-        memset(model,0,sizeof(int) * 26 );
-        // get the model for current str
-        for (char  c: str) {
-            model[(int)c-97]++;
-        }
-        bool isNew = true;
-        int findIndex = 0;
-        // check is there a new model
-        for (auto modelpre: record) {
-            if (memcmp(model,modelpre, sizeof(int) * 26 ) == 0) {
-                isNew = false;
-                break;
-            }
-            findIndex++;
-        }
-        // new insert
-        if (isNew) {
-            record.push_back(model);
-            vector<string> first;
-            first.push_back(str);
-            result.push_back(first);
-        } else { // push to result
-            delete [] model;
-            result.at(findIndex).push_back(str);
-        }
-    }
-    // clear temp
-    for(vector<int*>::iterator it = record.begin();it != record.end();) {
-        delete []*it;
-        it = record.erase(it);
-    }
-    return result;
 }
 
 #pragma mark - sort
