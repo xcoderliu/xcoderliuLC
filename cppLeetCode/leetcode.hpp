@@ -682,6 +682,49 @@ int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
     return 0;
 }
 
+// https://leetcode-cn.com/problems/word-ladder-ii/
+vector<vector<string>> findLadders(string beginWord, string endWord, vector<string>& wordList) {
+    if (find(wordList.begin(), wordList.end(), endWord) == wordList.end()) {
+        return vector<vector<string>>();
+    }
+    queue<vector<string>>q;
+    q.push({beginWord});
+    vector<bool>visited(wordList.size() + 1,false);
+    vector<vector<string>> res;
+    while (!q.empty()) {
+        int size = (int)q.size();
+        vector<bool>levelVisited(wordList.size() + 1,false);
+        while (size-- > 0) {
+            vector<string> curPath = q.front();
+            string curWord = curPath.back();
+            q.pop();
+            for (int i = 0; i < wordList.size(); i++) {
+                if (visited[i]) {
+                    continue;
+                }
+                string wordnew = wordList[i];
+                if (laaderVaild(curWord,wordnew)) {
+                    auto newPath = curPath;
+                    newPath.push_back(wordnew);
+                    if (wordnew.compare(endWord) == 0) {
+                        res.push_back(newPath);
+                    } else {
+                        q.push(newPath); //能跳到下一个字典的都加入队列
+                    }
+                    levelVisited[i] = true; //同一层因为路径的问题还不能清空
+                }
+            }
+        }
+        // 跳出层之后再设置访问
+        for (int i = 0; i < levelVisited.size(); i++) {
+            if (levelVisited[i]) {
+                visited[i] = true;
+            }
+        }
+    }
+    return res;
+}
+
 // https://leetcode-cn.com/problems/group-anagrams/
 vector<vector<string>> groupAnagrams(vector<string>& strs) {
     vector<int*> record;
