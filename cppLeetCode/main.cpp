@@ -67,6 +67,8 @@ int main(int argc, const char * argv[]) {
     levelOrder(&one);
     levelOrderBottom(&one);
     zigzagLevelOrder(&one);
+    auto binaryTreePathsResult = sumNumbers(&one);
+    cout << &binaryTreePathsResult << endl;
     //
     //    levelOrder(&one);
     

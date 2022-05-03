@@ -1156,7 +1156,278 @@ int maxDepth_recursive(TreeNode* root) {
     return max(maxDepth_recursive(root->left), maxDepth_recursive(root->right)) + 1;
 }
 
+// https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/
+int minDepth(TreeNode* root) {
+    int level = INT_MAX;
+    if(root == nullptr)
+        return 0;
+    queue<pair<TreeNode*,int> > q;
+    q.push(make_pair(root,0));
+    while(!q.empty()) {
+        TreeNode *node = q.front().first;
+        int curlevel = q.front().second;
+        q.pop();
+        if(node->left)
+            q.push(make_pair(node->left,curlevel+1));
+        if(node->right)
+            q.push(make_pair(node->right,curlevel+1));
+        if(node->left == nullptr && node->right == nullptr)
+            level = min(curlevel + 1,level);
+    }
+    return level;
+}
+
+// https://leetcode-cn.com/problems/invert-binary-tree/
+TreeNode* invertTree(TreeNode* root) {
+    if(root == nullptr)
+        return root;
+    invertTree(root->left);
+    invertTree(root->right);
+    swap(root->left,root->right);
+    return root;
+}
+
+// https://leetcode-cn.com/problems/same-tree/
+bool isSameTree(TreeNode* p, TreeNode* q) {
+    if(p == nullptr || q == nullptr) {
+        if (p == nullptr && q == nullptr)
+            return true;
+        else
+            return false;
+    } else {
+        if (p->val != q->val)
+            return false;
+    }
+    return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
+}
+
+// https://leetcode-cn.com/problems/symmetric-tree/
+bool compareforSymmetric(TreeNode* left, TreeNode* right) {
+    if (left == nullptr || right == nullptr) {
+        if (left == nullptr && right == nullptr)
+            return true;
+        else
+            return false;
+    }
+    if (left->val != right->val)
+        return false;
+    return compareforSymmetric(left->left,right->right) && compareforSymmetric(left->right,right->left);
+}
+bool isSymmetric(TreeNode* root) {
+    if (root == nullptr)
+        return root;
+    return compareforSymmetric(root->left,root->right);
+}
+
+// https://leetcode-cn.com/problems/count-complete-tree-nodes/
+int _countNodes(TreeNode* root, int & count) {
+    if (root != nullptr) {
+        count = count+1;
+        _countNodes(root->left, count);
+        _countNodes(root->right, count);
+    }
+    return count;
+}
+int countNodes(TreeNode* root) {
+    int result = 0;
+    result = _countNodes(root,result);
+    return result;
+}
+
+// https://leetcode-cn.com/problems/balanced-binary-tree/
+bool _isBalanced(TreeNode *left, TreeNode*right) {
+    if (left == nullptr || right == nullptr) {
+        if(left == right)
+            return true;
+        if (left != nullptr) {
+            return maxDepth(left) <= 1;
+        }
+        if (right != nullptr) {
+            return maxDepth(right) <= 1;
+        }
+    }
+    int levelleft = maxDepth(left);
+    int levelright = maxDepth(right);
+    if(abs(levelleft - levelright) > 1)
+        return false;
+    return _isBalanced(left->left,left->right) && _isBalanced(right->left,right->right);
+}
+bool isBalanced(TreeNode* root) {
+    if(root == nullptr)
+        return true;
+    return _isBalanced(root->left,root->right);
+}
+
+// https://leetcode-cn.com/problems/path-sum/
+bool hasPathSum(TreeNode* root, int targetSum) {
+    if(root == nullptr)
+        return false;
+    if(root->left == nullptr && root->right == nullptr) {
+        return root->val == targetSum;
+    }
+    return hasPathSum(root->left, targetSum - root->val) || hasPathSum(root->right, targetSum - root->val);
+}
+
+// https://leetcode-cn.com/problems/sum-of-left-leaves/
+int sumOfLeftLeaves(TreeNode* root) {
+    if(root == nullptr)
+        return 0;
+    int res = 0;
+    if(root->left != nullptr && root->left->left == nullptr && root->left->right == nullptr)
+        res = root->left->val;
+    return sumOfLeftLeaves(root->left) + sumOfLeftLeaves(root->right) + res;
+}
+
+// https://leetcode-cn.com/problems/binary-tree-paths/
+vector<string> binaryTreePaths(TreeNode* root) {
+    vector<string> res;
+    if(root == nullptr)
+        return res;
+    if(root->left == nullptr && root->right == nullptr) {
+        res.push_back(to_string(root->val));
+        return res;
+    }
+    
+    vector<string>lefts = binaryTreePaths(root->left);
+    for (int i = 0; i < lefts.size(); i++) {
+        res.push_back(to_string(root->val) + "->" + lefts[i]);
+    }
+    
+    vector<string>rights = binaryTreePaths(root->right);
+    for (int i = 0; i < rights.size(); i++) {
+        res.push_back(to_string(root->val) + "->" + rights[i]);
+    }
+    
+    return res;
+}
+
+// https://leetcode-cn.com/problems/binary-tree-paths/
+TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+    if(root == nullptr) {
+        return root;
+    }
+    int less = p->val < q->val ? p->val : q->val;
+    int greater = p->val < q->val ? q->val : p->val;
+    if (greater < root->val)
+        return lowestCommonAncestor(root->left,p,q);
+    if (less > root->val)
+        return lowestCommonAncestor(root->right,p,q);
+    return root;
+}
+
+// https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/
+TreeNode* _sortedArrayToBST(vector<int>& nums, int l, int r) {
+    if (r < l) return nullptr;
+    int mid = l + ((r - l) / 2);
+    
+    TreeNode* root = new TreeNode(nums[mid]);
+    root->left = _sortedArrayToBST(nums, l, mid - 1);
+    root->right = _sortedArrayToBST(nums, mid + 1, r);
+    return root;
+}
+TreeNode* sortedArrayToBST(vector<int>& nums) {
+    return _sortedArrayToBST(nums, 0, (int)nums.size() - 1);
+}
+
 // --------------------------- Medium -------------------------------------
+
+// https://leetcode-cn.com/problems/validate-binary-search-tree/
+bool _isValidBST(TreeNode *node, long long less, long long greater) {
+    if (node == nullptr)
+        return true;
+    if (node->val <= less || node->val >= greater)
+        return false;
+    return _isValidBST(node->left,less,node->val) && _isValidBST(node->right,node->val,greater);
+}
+bool isValidBST(TreeNode* root) {
+    return _isValidBST(root, LONG_MIN, LONG_MAX);
+}
+
+// https://leetcode-cn.com/problems/delete-node-in-a-bst/
+TreeNode* deleteNode(TreeNode* root, int key) {
+    if (root == nullptr) return root;
+    if (root->val == key) {
+        if (root->right == nullptr) { // 2.删除右节点
+            return root->left;
+        }
+        TreeNode *cur = root->right;
+        while (cur->left) {
+            cur = cur->left;
+        }
+        swap(root->val, cur->val); // 1. 交换自己和右子树最小的点
+    }
+    root->left = deleteNode(root->left, key);
+    root->right = deleteNode(root->right, key);
+    return root;
+}
+
+// https://leetcode-cn.com/problems/path-sum-ii/
+void dfsPathSum(TreeNode* root, vector<int> &tmp, int sum, vector<vector<int>> &res){
+    if(!root)
+        return;
+    tmp.push_back(root->val);
+    if(root->val==sum && (root->left == nullptr && root->right == nullptr)){ //叶子节点
+        res.push_back(tmp);
+    }
+    dfsPathSum(root->left,tmp,sum - root->val, res);
+    dfsPathSum(root->right,tmp,sum - root->val, res);
+    tmp.pop_back();
+}
+vector<vector<int>> pathSum(TreeNode* root, int sum) {
+    vector<vector<int>> res;
+    vector<int> tmp;
+    dfsPathSum(root, tmp, sum, res);
+    return res;
+}
+
+// https://leetcode-cn.com/problems/sum-root-to-leaf-numbers/
+void dfsSumNumbers(TreeNode* root, vector<int>&temp,vector<vector<int>> &res) {
+    if (root == nullptr)
+        return;
+    temp.push_back(root->val);
+    if (root->left == nullptr && root->right == nullptr) {
+        res.push_back(temp);
+    }
+    dfsSumNumbers(root->left,temp,res);
+    dfsSumNumbers(root->right,temp,res);
+    temp.pop_back();
+}
+
+int sumNumbers(TreeNode* root) {
+    vector<vector<int>> res;
+    vector<int> tmp;
+    dfsSumNumbers(root, tmp, res);
+    int sum = 0;
+    for( vector<int> path : res) {
+        int num = 0;
+        int powInt = (int)path.size() - 1;
+        for (int i = 0;i < path.size();i++,powInt--) {
+            num+=path[i] * pow(10,powInt);
+        }
+        sum+=num;
+    }
+    return sum;
+}
+
+// https://leetcode-cn.com/problems/path-sum-iii/
+int64_t findPathSum(TreeNode *node, int64_t num) {
+    if(nullptr == node)
+        return 0;
+    int64_t res = 0;
+    if(num == node->val)
+        res++;
+    res+=findPathSum(node->left,num - node->val);
+    res+=findPathSum(node->right,num - node->val);
+    return res;
+}
+int64_t pathSum(TreeNode* root, int64_t targetSum) {
+    if(nullptr == root)
+        return 0;
+    int64_t res = findPathSum(root, targetSum);
+    res+=pathSum(root->left, targetSum);
+    res+=pathSum(root->right,targetSum);
+    return res;
+}
 
 // https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/
 vector<vector<int>> levelOrderBottom(TreeNode* root) {
@@ -1400,6 +1671,23 @@ bool isPalindrome(ListNode* head) {
 }
 
 // --------------------------- Medium -------------------------------------
+
+// https://leetcode-cn.com/problems/reorder-list/
+void reorderList(ListNode* head) {
+    vector<ListNode*> temp;
+    ListNode *cur = head;
+    while(cur) {
+        temp.push_back(cur);
+        cur = cur->next;
+    }
+    int left = 0;
+    int right = (int)temp.size() - 1;
+    while (left < right) {
+        temp[left]->next = temp[right];
+        temp[right--]->next = temp[++left];
+    }
+    temp[left]->next = nullptr;
+}
 
 // https://leetcode-cn.com/problems/partition-list/
 ListNode* partition(ListNode* head, int x) {
