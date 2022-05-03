@@ -704,6 +704,49 @@ vector<int> topKFrequent(vector<int>& nums, int k) {
     return result;
 }
 
+class CompareListNode {
+public:
+    bool operator() (ListNode* a, ListNode* b) {
+        assert(a);
+        assert(b);
+        return a->val > b->val;
+    }
+};
+
+// https://leetcode-cn.com/problems/merge-k-sorted-lists/
+ListNode* mergeKLists(vector<ListNode*>& lists) {
+    if (lists.size() <= 1) {
+        return lists.size() == 0 ? nullptr : lists[0];
+    }
+    priority_queue<ListNode*,vector<ListNode*>,CompareListNode >pq;
+    for(ListNode* list : lists) {
+        ListNode *cur = list;
+        while (cur) {
+            pq.push(cur);
+            cur = cur->next;
+        }
+    }
+    ListNode *pres = new ListNode(-1);
+    ListNode *pre = nullptr;
+    ListNode *cur = nullptr;
+    while (!pq.empty()) {
+        cur = pq.top();
+        pq.pop();
+        if (pre != nullptr) {
+            pre->next = cur;
+        } else {
+            pres->next = cur;
+        }
+        pre = cur;
+    }
+    if(cur)
+        cur->next = nullptr;
+    ListNode *result = pres->next;
+    delete pres;
+    pres = nullptr;
+    return result;
+}
+
 // --------------------------- Hard -------------------------------------
 
 // https://leetcode-cn.com/problems/word-ladder/
@@ -1085,6 +1128,32 @@ vector<int> postorderTraverse(TreeNode *root) {
     }
     cout << "postorderTraverse end" << endl;
     return result;
+}
+
+// https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/
+int maxDepth(TreeNode* root) {
+    int level = 0;
+    if(root == nullptr)
+        return level;
+    queue<pair<TreeNode*,int> > q;
+    q.push(make_pair(root,level));
+    while(!q.empty()) {
+        TreeNode *node = q.front().first;
+        int curlevel = q.front().second;
+        q.pop();
+        if(node->left)
+            q.push(make_pair(node->left,curlevel+1));
+        if(node->right)
+            q.push(make_pair(node->right,curlevel+1));
+        level = max(curlevel + 1,level);
+    }
+    return level;
+}
+
+int maxDepth_recursive(TreeNode* root) {
+    if (root == nullptr)
+        return 0;
+    return max(maxDepth_recursive(root->left), maxDepth_recursive(root->right)) + 1;
 }
 
 // --------------------------- Medium -------------------------------------
