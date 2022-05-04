@@ -1301,17 +1301,17 @@ vector<string> binaryTreePaths(TreeNode* root) {
     return res;
 }
 
-// https://leetcode-cn.com/problems/binary-tree-paths/
-TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+// https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/
+TreeNode* lowestCommonAncestorBST(TreeNode* root, TreeNode* p, TreeNode* q) {
     if(root == nullptr) {
         return root;
     }
     int less = p->val < q->val ? p->val : q->val;
     int greater = p->val < q->val ? q->val : p->val;
     if (greater < root->val)
-        return lowestCommonAncestor(root->left,p,q);
+        return lowestCommonAncestorBST(root->left,p,q);
     if (less > root->val)
-        return lowestCommonAncestor(root->right,p,q);
+        return lowestCommonAncestorBST(root->right,p,q);
     return root;
 }
 
@@ -1341,6 +1341,79 @@ bool _isValidBST(TreeNode *node, long long less, long long greater) {
 }
 bool isValidBST(TreeNode* root) {
     return _isValidBST(root, LONG_MIN, LONG_MAX);
+}
+
+// https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/
+int _kthSmallestLeft(TreeNode* root){
+    if(root==nullptr) return 0;
+    return _kthSmallestLeft(root->left)+_kthSmallestLeft(root->right)+1;
+}
+int kthSmallest(TreeNode* root, int k) {
+    int leftN=_kthSmallestLeft(root->left);
+    if(leftN+1==k) return root->val;
+    else if(k<=leftN){
+        return kthSmallest(root->left, k);
+    }
+    else return kthSmallest(root->right, k-leftN-1);
+}
+
+// https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/
+bool canfindChild(TreeNode* node, int val) {
+    if (node == nullptr)
+        return false;
+    if(node->val == val)
+        return true;
+    return canfindChild(node->left,val) || canfindChild(node->right,val);
+}
+TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+    queue<pair<TreeNode *, int>>theQ;
+    theQ.push(make_pair(root,0));
+    vector<vector<pair<TreeNode *, int>>> rec;
+    while (!theQ.empty()) {
+        TreeNode *node = theQ.front().first;
+        int level = theQ.front().second;
+        theQ.pop();
+        if (level == rec.size())
+            rec.push_back(vector<pair<TreeNode *, int>>());
+        rec[level].push_back(make_pair(node, level));
+        if(node->left)
+            theQ.push(make_pair(node->left,level+1));
+        if(node->right)
+            theQ.push(make_pair(node->right,level+1));
+    }
+    int plevel = 0;
+    int qlevel = 0;
+    bool findp = false;
+    bool findq = false;
+    for(int i = 0; i < rec.size(); i++) {
+        for (auto [node, level] : rec[i]) {
+            if (node->val == p->val) {
+                plevel = i;
+                findp = true;
+            }
+        }
+        for (auto [node, level] : rec[i]) {
+            if (node->val == q->val) {
+                qlevel = i;
+                findq = true;
+            }
+        }
+        if(findp && findq)
+            break;
+    }
+    int uplever = min(plevel,qlevel);
+    TreeNode* downNode =  plevel < qlevel ? p : q;
+    TreeNode* upNode =  downNode->val == q->val ? p : q;
+    // if we can find downNode from upNode
+    if (canfindChild(upNode,downNode->val))
+        return upNode;
+    for (int i = uplever; i > 0 ; i--) {
+        for (auto [node, level] : rec[i]) {
+            if(canfindChild(node, upNode->val)&&canfindChild(node,downNode->val))
+                return node;
+        }
+    }
+    return root;
 }
 
 // https://leetcode-cn.com/problems/delete-node-in-a-bst/
