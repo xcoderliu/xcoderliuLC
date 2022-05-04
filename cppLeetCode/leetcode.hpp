@@ -2154,6 +2154,60 @@ ListNode* reverseKGroup(ListNode* head, int k) {
     return preHead->next;
 }
 
+#pragma mark - greedy
+
+// https://leetcode-cn.com/problems/assign-cookies/
+int findContentChildren(vector<int>& g, vector<int>& s) {
+    sort(s.begin(),s.end(),greater<int>());
+    sort(g.begin(),g.end(),greater<int>());
+    int res = 0;
+    int si = 0;
+    int gi = 0;
+    while(si < s.size() && gi < g.size()) {
+        if(s[si] >= g[gi]) {
+            si++;
+            gi++;
+            res++;
+        } else {
+            gi++;
+        }
+    }
+    return res;
+}
+
+// https://leetcode-cn.com/problems/is-subsequence/
+bool isSubsequence(string s, string t) {
+    int si = 0;
+    int ti = 0;
+    while(si < s.size() && ti < t.size()) {
+        if (s[si] == t[ti]) {
+            si++;
+            ti++;
+        } else {
+            ti++;
+        }
+    }
+    return si == s.size();
+}
+
+// https://leetcode-cn.com/problems/non-overlapping-intervals/
+bool compareIntervalsEnd(vector<int> intervalA, vector<int> intervalB) {
+    return intervalA[1] < intervalB[1];
+}
+int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+    stable_sort(intervals.begin(), intervals.end(), compareIntervalsEnd);
+    int res = 1; //区间个数
+    int end = intervals[0][1]; //分割点
+    
+    for (int i = 1; i < intervals.size();i++) {
+        if (end <= intervals[i][0]) { // end 比下一个节点的起始值小
+            end = intervals[i][1]; //end切换到下一个节点
+            res++;
+        }
+    }
+    return (int)intervals.size() - res;
+}
+
 #pragma mark - dynamic programming
 
 // https://leetcode-cn.com/problems/climbing-stairs/
