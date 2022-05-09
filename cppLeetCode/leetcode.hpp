@@ -1670,6 +1670,29 @@ vector<string> restoreIpAddresses(string s) {
     return res;
 }
 
+// https://leetcode.cn/problems/permutations/
+void _permute(vector<int> nums, vector<int> &temp,vector<vector<int>> &res) {
+    if (nums.size() == 0) {
+        res.push_back(temp);
+        return;
+    }
+    
+    for(int i = 0; i < nums.size(); i++) {
+        temp.push_back(nums[i]);
+        vector<int> tempNums = nums;
+        vector<int>::iterator needRemove = tempNums.begin() + i;
+        tempNums.erase(needRemove);
+        _permute(tempNums, temp, res);
+        temp.pop_back();
+    }
+}
+vector<vector<int>> permute(vector<int>& nums) {
+    vector<vector<int>> res;
+    vector<int> temp;
+    _permute(nums, temp,res);
+    return res;
+}
+
 #pragma mark - ListNode
 
 ListNode* createList(int arr[],int n) {
