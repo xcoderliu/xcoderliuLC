@@ -208,27 +208,23 @@ int lengthOfLongestSubstring(string s) {
 
 // https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/
 vector<int> findAnagrams(string s, string p) {
-    vector<int> result;
-    if (s.length() < p.length()) {
-        return result;
-    }
-    int checkModel[256] = {0};
-    for (int i = 0; i < p.size(); ++i) {
-        checkModel[p[i]]++;
+    vector<int>res;
+    int checkmodel[256] = {0};
+    for( char c : p) {
+        checkmodel[c]++;
     }
     int start = 0;
     int end = -1;
-    int curModel[256] = {0};
+    int curmodel[256] = {0};
     while (start < s.length()) {
-        if (end + 1 < s.length() && curModel[s[end + 1]] < checkModel[s[end + 1]])
-            curModel[s[++end]]++;
+        if (end + 1 < s.length() && curmodel[s[end + 1]] < checkmodel[s[end+1]])
+            curmodel[s[++end]]++;
         else
-            curModel[s[start++]]--;
-
-        if (0 == memcmp(curModel,checkModel,sizeof(int) * 256))
-            result.push_back(start);
+            curmodel[s[start++]]--;
+        if (0 == memcmp(curmodel,checkmodel,sizeof(int) * 256))
+            res.push_back(start);
     }
-    return result;
+    return res;
 }
 
 #pragma mark - stack set array map
@@ -370,26 +366,7 @@ bool isHappy(int n) {
     }
 }
 
-// --------------------------- Medium -------------------------------------
-
-// https://leetcode-cn.com/problems/sort-colors/
-void sortColors(vector<int> &nums) {
-    // 0...zero 0 zero+1....two-1 1 two...n-1 2
-    int n = (int)nums.size();
-    int zeroIndex = -1;
-    int twoIndex = n;
-    for (int i = 0; i < twoIndex;) {
-        if (nums[i] == 0) {
-            swap(nums[i++], nums[++zeroIndex]);
-        } else if (nums[i] == 2) {
-            swap(nums[i], nums[--twoIndex]);
-        } else { // 1
-            assert(nums[i] == 1);
-            i++;
-        }
-    }
-}
-
+// https://leetcode-cn.com/problems/merge-sorted-array/
 void merge(vector<int> &nums1, int m, vector<int> &nums2, int n) {
     int end = m + n - 1;
     while (n) {
@@ -401,26 +378,41 @@ void merge(vector<int> &nums1, int m, vector<int> &nums2, int n) {
     }
 }
 
+// --------------------------- Medium -------------------------------------
+
+// https://leetcode-cn.com/problems/sort-colors/
+void sortColors(vector<int> &nums)  {
+    // 0....0 left.... 1 ...right 2...2
+    int left = -1; // final left of 1
+    int right = (int)nums.size();// final right of 1
+    for (int i = 0; i < right;) {
+        if (nums[i] == 0)
+            swap(nums[i++],nums[++left]);
+        else if (nums[i] == 2)
+            swap(nums[i],nums[--right]);
+        else
+            i++;
+    }
+}
+
 // https://leetcode-cn.com/problems/kth-largest-element-in-an-array/
 int findKthLargest(vector<int> &nums, int k) {
-    vector<int> temp;
-    for (int i = 0; i < k; ++i) {
-        temp.push_back(nums[i]);
-    }
-    std::sort(temp.begin(), temp.end());
-    for (int i = k; i < nums.size(); ++i) {
-        if (nums[i] > temp[0]) {
-            temp[0] = nums[i];
-            int j = 0;
-            while (j < k - 1) {
-                if (temp[j] > temp[j + 1]) {
-                    swap(temp[j], temp[j + 1]);
-                }
-                j++;
+    vector<int> record;
+    for (int i = 0; i < k; i++)
+        record.push_back(nums[i]);
+    sort(record.begin(),record.end());
+    int index = k;
+    while (index < nums.size()) {
+        if (nums[index] > record[0]) {
+            record[0] = nums[index];
+            for (int i = 0;i < k - 1; i++) {
+                if (record[i] > record[i+1])
+                    swap(record[i],record[i+1]);
             }
         }
+        index++;
     }
-    return temp[0];
+    return record[0];
 }
 
 // https://leetcode-cn.com/problems/evaluate-reverse-polish-notation/
@@ -484,6 +476,8 @@ string simplifyPath(string path) {
             }
         }
     }
+    // rec is a stack with  root->xx->xx->left this pop last path first
+    // to another stack with left->xx->xx->root so this will pop root first
     stack<string> res;
     while (rec.size() > 0) {
         res.push(rec.top());
@@ -911,7 +905,7 @@ int maxArea(vector<int> &height) {
     int distance = r;
     while (l < r) {
         area = max(area, distance * min(height[l], height[r]));
-        if (l + 1 < r && r - 1 >= 0) {
+        if (l < r && r >= 1) {
             if (height[l] < height[r]) {
                 l++;
                 distance--;
@@ -1303,14 +1297,13 @@ vector<string> binaryTreePaths(TreeNode* root) {
 
 // https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/
 TreeNode* lowestCommonAncestorBST(TreeNode* root, TreeNode* p, TreeNode* q) {
-    if(root == nullptr) {
+    if (root == nullptr)
         return root;
-    }
     int less = p->val < q->val ? p->val : q->val;
-    int greater = p->val < q->val ? q->val : p->val;
-    if (greater < root->val)
+    int big = p->val < q->val ? q->val : p->val;
+    if (root->val > big)
         return lowestCommonAncestorBST(root->left,p,q);
-    if (less > root->val)
+    if (root->val < less)
         return lowestCommonAncestorBST(root->right,p,q);
     return root;
 }
@@ -1592,7 +1585,93 @@ vector<int> rightSideView(TreeNode* root) {
     return res;
 }
 
+#pragma mark - Recursive
+
+// https://leetcode.cn/problems/letter-combinations-of-a-phone-number/
+string getletterCombinations(int num) {
+    if (num == 2) {
+        return  "abc";
+    } else  if (num == 3) {
+        return  "def";
+    } else  if (num == 4) {
+        return  "ghi";
+    }
+    else  if (num == 5) {
+       return  "jkl";
+   } else  if (num == 6) {
+       return  "mno";
+   } else  if (num == 7) {
+       return  "pqrs";
+   } else  if (num == 8) {
+       return  "tuv";
+   } else  if (num == 9) {
+       return  "wxyz";
+   }
+    return "";
+}
+void findLetterCombinations(const string &digits, int index, const string &s, vector<string> &res) {
+    if (index == digits.size()) {
+        res.push_back(s);
+        return;
+    }
+    char c = digits[index];
+    string letters = getletterCombinations(c - '0');
+    for (int i = 0; i < letters.size(); i++) {
+        findLetterCombinations(digits, index + 1,s + letters[i], res);
+    }
+}
+vector<string> letterCombinations(string digits) {
+    vector<string> res;
+    if (digits.size() == 0)
+        return res;
+    findLetterCombinations(digits, 0, "", res);
+    return res;
+}
+
+
+
+// https://leetcode.cn/problems/restore-ip-addresses/
+bool _isVaildIpAddresses(const string &s, int start, int end) {
+    if (start > end)
+        return false;
+    if(s[start] == '0' && start != end)
+        return false;
+    int num = 0;
+    for (int i = start; i <= end; i++) {
+        if(s[i] > '9' || s[i] < '0')
+            return false;
+        num = num * 10 + (s[i] - '0');
+        if (num > 255)
+            return false;
+    }
+    return true;
+}
+void _restoreIpAddresses(string s, int startIndex, int pointNum, vector<string> &res) {
+    if (pointNum == 3) {
+        if(_isVaildIpAddresses(s, startIndex, (int)s.size() - 1))
+            res.push_back(s);
+    }
+    for (int i = startIndex; i < s.size();i++) {
+        if (_isVaildIpAddresses(s, startIndex, i)) {
+            s.insert(s.begin() + i + 1,'.');
+            pointNum++;
+            _restoreIpAddresses(s,i+2,pointNum,res);
+            pointNum--;
+            s.erase(s.begin() + i + 1);
+        } else {
+            break;
+        }
+    }
+}
+vector<string> restoreIpAddresses(string s) {
+    vector<string> res;
+    if (s.size() > 12) return res;
+    _restoreIpAddresses(s, 0, 0, res);
+    return res;
+}
+
 #pragma mark - ListNode
+
 ListNode* createList(int arr[],int n) {
     if (n == 0) {
         return nullptr;
