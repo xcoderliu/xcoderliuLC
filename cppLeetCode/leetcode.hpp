@@ -1628,8 +1628,6 @@ vector<string> letterCombinations(string digits) {
     return res;
 }
 
-
-
 // https://leetcode.cn/problems/restore-ip-addresses/
 bool _isVaildIpAddresses(const string &s, int start, int end) {
     if (start > end)
@@ -1650,6 +1648,8 @@ void _restoreIpAddresses(string s, int startIndex, int pointNum, vector<string> 
     if (pointNum == 3) {
         if(_isVaildIpAddresses(s, startIndex, (int)s.size() - 1))
             res.push_back(s);
+        else
+            return;
     }
     for (int i = startIndex; i < s.size();i++) {
         if (_isVaildIpAddresses(s, startIndex, i)) {
@@ -1690,6 +1690,196 @@ vector<vector<int>> permute(vector<int>& nums) {
     vector<vector<int>> res;
     vector<int> temp;
     _permute(nums, temp,res);
+    return res;
+}
+
+// https://leetcode.cn/problems/permutations-ii/
+void _permuteUnique(vector<int> nums, vector<int> &temp,  vector<bool> &used,vector<vector<int>> &res) {
+    if (temp.size() == nums.size()) {
+        res.push_back(temp);
+        return;
+    }
+    
+    for(int i = 0; i < nums.size(); i++) {
+        if (i > 0 && nums[i] == nums[i - 1] && used[i - 1] == false)
+            continue;
+        if(used[i] == false) {
+            used[i] = true;
+            temp.push_back(nums[i]);
+            _permuteUnique(nums, temp, used, res);
+            used[i] =false;
+            temp.pop_back();
+        }
+    }
+}
+vector<vector<int>> permuteUnique(vector<int>& nums) {
+    vector<vector<int>> res;
+    vector<int> temp;
+    vector<bool> used(nums.size(),false);
+    sort(nums.begin(),nums.end());
+    _permuteUnique(nums, temp, used, res);
+    return res;
+}
+
+// https://leetcode.cn/problems/combinations/
+void _combine(int n, int k, int startIndex, vector<int> temp, vector<vector<int>> &res) {
+    if (temp.size() == k) {
+        res.push_back(temp);
+        return;
+    }
+    
+    for (int i = startIndex; i <= n - (k - temp.size()) + 1; i++) {
+        temp.push_back(i);
+        _combine(n, k, i + 1, temp, res);
+        temp.pop_back();
+    }
+}
+vector<vector<int>> combine(int n, int k) {
+    vector<vector<int>> res;
+    if (k > n)
+        return res;
+    vector<int> temp;
+    _combine(n, k, 1, temp, res);
+    return res;
+}
+
+// https://leetcode.cn/problems/combination-sum/
+void _combinationSum(vector<int>& candidates,int target, int sum, int index,  vector<int> &temp, vector<vector<int>> &res) {
+    if (sum > target)
+        return;
+    if (sum == target) {
+        res.push_back(temp);
+        return;
+    }
+    for (int i = index; i < candidates.size(); i++) {
+        temp.push_back(candidates[i]);
+        sum+=candidates[i];
+        _combinationSum(candidates, target, sum, i, temp, res);
+        sum-=candidates[i];
+        temp.pop_back();
+    }
+}
+vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+    vector<vector<int>> res;
+    vector<int> temp;
+    _combinationSum(candidates, target, 0, 0, temp, res);
+    return res;
+}
+
+// https://leetcode.cn/problems/combination-sum-ii/
+void _combinationSum2(vector<int>& candidates,int target, int sum, int index, vector<bool> &used, vector<int> &temp, vector<vector<int>> &res) {
+    if (sum > target)
+        return;
+    if (sum == target) {
+        res.push_back(temp);
+        return;
+    }
+    for (int i = index; i < candidates.size(); i++) {
+        if (i > 0 && candidates[i] == candidates[i - 1] && used[i - 1] == false)
+            continue;
+        if (!used[i]) {
+            used[i] = true;
+            if (used[i])
+                temp.push_back(candidates[i]);
+            sum+=candidates[i];
+            _combinationSum2(candidates, target, sum, i+1, used, temp, res);
+            sum-=candidates[i];
+            temp.pop_back();
+            used[i] = false;
+        }
+    }
+}
+vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+    vector<vector<int>> res;
+    vector<int> temp;
+    vector<bool> used(candidates.size(),false);
+    sort(candidates.begin(),candidates.end());
+    _combinationSum2(candidates, target, 0, 0, used, temp, res);
+    return res;
+}
+
+// https://leetcode.cn/problems/combination-sum-iii/
+void _combinationSum3(int k, int n, int startIndex, int sum, vector<int>&temp, vector<vector<int>> &res) {
+    if (sum > n)
+        return;
+    if (temp.size() > k)
+        return;
+    if (sum == n && temp.size() == k) {
+        res.push_back(temp);
+        return;
+    }
+    for (int i = startIndex; i <= 9; i++) {
+        sum+=i;
+        temp.push_back(i);
+        _combinationSum3(k, n, i + 1,sum, temp, res);
+        sum-=i;
+        temp.pop_back();
+    }
+}
+vector<vector<int>> combinationSum3(int k, int n) {
+    vector<vector<int>> res;
+    vector<int> temp;
+    _combinationSum3(k, n, 1, 0, temp, res);
+    return res;
+}
+
+// https://leetcode.cn/problems/subsets/
+void _subsets(vector<int>& nums, int maxCount, int curIndex, vector<int> &temp, vector<vector<int>> &res) {
+    if (temp.size() == maxCount) {
+        res.push_back(temp);
+        return;
+    }
+    for (int i = curIndex; i < nums.size() - (maxCount - temp.size()) + 1; i++) {
+        temp.push_back(nums[i]);
+        _subsets(nums, maxCount, i + 1,temp, res);
+        temp.pop_back();
+    }
+}
+vector<vector<int>> subsets(vector<int>& nums) {
+    vector<vector<int>> res;
+    if (nums.size() == 0)
+        return res;
+    res.push_back(vector<int>());
+    for (int i = 1; i <= nums.size(); i++) {
+        vector<vector<int>> resTemp;
+        vector<int> temp;
+        _subsets(nums, i, 0, temp, resTemp);
+        res.insert(res.end(),resTemp.begin(),resTemp.end());
+    }
+    return res;
+}
+
+// https://leetcode.cn/problems/subsets-ii/
+void _subsetsWithDup(vector<int>& nums, int maxCount, int curIndex, vector<bool> &used, vector<int> &temp, vector<vector<int>> &res) {
+    if (temp.size() == maxCount) {
+        res.push_back(temp);
+        return;
+    }
+    for (int i = curIndex; i < nums.size() - (maxCount - temp.size()) + 1; i++) {
+        if (i - 1 >= 0 && nums[i] == nums[i - 1] && used[i - 1] == false)
+            continue;
+        if (!used[i]) {
+            used[i] = true;
+            temp.push_back(nums[i]);
+            _subsetsWithDup(nums, maxCount, i + 1, used,temp, res);
+            temp.pop_back();
+            used[i] = false;
+        }
+    }
+}
+vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+    vector<vector<int>> res;
+    if (nums.size() == 0)
+        return res;
+    sort(nums.begin(), nums.end());
+    res.push_back(vector<int>());
+    for (int i = 1; i <= nums.size(); i++) {
+        vector<bool> used(nums.size()+1,false);
+        vector<vector<int>> resTemp;
+        vector<int> temp;
+        _subsetsWithDup(nums, i, 0, used, temp, resTemp);
+        res.insert(res.end(),resTemp.begin(),resTemp.end());
+    }
     return res;
 }
 
@@ -2343,12 +2533,12 @@ int minimumTotal(vector<vector<int>>& triangle) {
 
 // https://leetcode-cn.com/problems/integer-break/
 int integerBreak(int n) {
-    vector<int>temp(n+1,-1);
+    vector<int> temp(n+1,-1);
     temp[1] = 1;
     for (int i = 2; i <= n; ++i) {
         for (int j = 1; j <= i - 1; ++j) {
             // j , i - j
-            temp[n] = max(temp[n],max(j * (i - j),j * temp[i - j]));
+            temp[i] = max(temp[i],max(j * (i - j),j * temp[i - j]));
         }
     }
     return temp[n];
