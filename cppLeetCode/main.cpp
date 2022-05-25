@@ -11,24 +11,6 @@
 #import "leetcode.hpp"
 using namespace std;
 
-static int64_t runtime;
-
-vector<int64_t> memCache = vector<int64_t>(60,-1);
-
-int64_t fib(int64_t n) {
-    runtime++;
-    if (n == 0) {
-        return 0;
-    }
-    if (n == 1) {
-        return 1;
-    }
-    if (memCache[n] == -1) {
-        memCache[n] = fib(n - 1) + fib(n - 2);
-    }
-    return memCache[n];
-}
-
 int main(int argc, const char * argv[]) {
     //    vector<int> nums = {0, 1, 0, 3, 12};
     //    quickSort(nums,0,nums.size() - 1);
@@ -45,6 +27,21 @@ int main(int argc, const char * argv[]) {
     //    vector<int> nums = {2,3,1,2,4,3};
     //    cout << minSubArrayLen(7, nums) << endl;
     //
+    
+    vector<vector<int>> obstacleGrid;
+    obstacleGrid.push_back({0,0,0});
+    obstacleGrid.push_back({0,1,0});
+    obstacleGrid.push_back({0,0,0});
+    uniquePathsWithObstacles(obstacleGrid);
+    
+    vector<vector<int>> matrix;
+    matrix.push_back({9,8,7,6});
+    matrix.push_back({2,3,2,5});
+    matrix.push_back({7,8,9,7});
+    matrix.push_back({5,4,3,2});
+    matrix.push_back({6,7,8,9});
+    largestPalindromicSubmatrix(matrix);
+    
     TreeNode one = TreeNode(1);
     TreeNode two = TreeNode(2);
     TreeNode three = TreeNode(3);

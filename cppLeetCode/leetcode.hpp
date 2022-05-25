@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <queue>
 #include <sstream>
+#include <algorithm>
 
 #pragma mark - common
 
@@ -831,6 +832,58 @@ vector<vector<string>> findLadders(string beginWord, string endWord, vector<stri
     return res;
 }
 
+// 求最大回文矩阵
+bool isPalindromicMatrix(vector<vector<int>> &matrix) {
+    int n = (int)matrix.size();
+    int checkLine = (n+1)/2;
+    for (int row = 0; row <= checkLine; row++) {
+        for (int col = 0; col < n; col++) {
+            if(matrix[row][col] != matrix[n - row - 1][n - col - 1]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+int largestPalindromicSubmatrix(vector<vector<int>> &matrix) {
+    int row = (int)matrix.size();
+    int col = 0;
+    if (row > 0) {
+        col = (int)matrix[0].size();
+    }
+    if (row == 0 && col == 0) {
+        return 0;
+    }
+    if (row == 0 || col == 0) {
+        return 1;
+    }
+    int n = min(col,row);
+    int res = 1;
+    for (int i = 2; i <= n; i++) { // submatrix length
+        for (int leftTopx = 0; leftTopx <= col - i; leftTopx++) {
+            for (int leftTopy = 0; leftTopy <= row - i; leftTopy++) {
+                vector<vector<int>> temp;
+                for (int temprow = 0; temprow < i; temprow++) {
+                    vector<int> newrow;
+                    for (int tempcol = 0; tempcol < i; tempcol++) {
+                        newrow.push_back(matrix[leftTopx + temprow][tempcol]);
+                    }
+                    temp.push_back(newrow);
+                }
+                if (isPalindromicMatrix(temp)) {
+                    res = max(res, i);
+                    break;
+                }
+            }
+            if (res >= i) {
+                break;
+            }
+        }
+    }
+    return res;
+}
+
 #pragma mark - sort
 
 int partition(vector<int> &nums, int low, int high) {
@@ -1384,8 +1437,6 @@ TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
                 plevel = i;
                 findp = true;
             }
-        }
-        for (auto [node, level] : rec[i]) {
             if (node->val == q->val) {
                 qlevel = i;
                 findq = true;
@@ -2536,7 +2587,7 @@ int integerBreak(int n) {
     vector<int> temp(n+1,-1);
     temp[1] = 1;
     for (int i = 2; i <= n; ++i) {
-        for (int j = 1; j <= i - 1; ++j) {
+        for (int j = 1; j < i; ++j) {
             // j , i - j
             temp[i] = max(temp[i],max(j * (i - j),j * temp[i - j]));
         }
