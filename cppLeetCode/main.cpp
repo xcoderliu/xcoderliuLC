@@ -28,6 +28,8 @@ int main(int argc, const char * argv[]) {
     //    cout << minSubArrayLen(7, nums) << endl;
     //
     
+    addBinary("101111", "10");
+    
     vector<vector<int>> obstacleGrid;
     obstacleGrid.push_back({0,0,0});
     obstacleGrid.push_back({0,1,0});

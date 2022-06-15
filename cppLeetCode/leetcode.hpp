@@ -276,6 +276,54 @@ void moveZeroes(vector<int> &nums) {
     }
 }
 
+// https://leetcode.cn/problems/JFETK5/
+string addBinary(string a, string b) {
+    vector<int> va;
+    vector<int> vb;
+    for (char c : a) {
+        va.push_back(atoi(&c));
+    }
+    reverse(va.begin(), va.end());
+    for (char c : b) {
+        vb.push_back(atoi(&c));
+    }
+    reverse(vb.begin(), vb.end());
+    vector<int> vsum;
+    int minIndex = (int)(min(va.size(),vb.size()));
+    int left = 0;
+    for (int i = 0;i < minIndex; i++) {
+        int result = va[i] + vb[i] + left;
+        left = 0;
+        if (result > 1) {
+            left = result / 2;
+            vsum.push_back(result - result / 2 * 2);
+        } else {
+            vsum.push_back(result);
+        }
+    }
+    int maxIndex = (int)(max(va.size(),vb.size()));
+    vector<int> greater = va.size() > vb.size() ? va : vb;
+    for (int i = minIndex; i < maxIndex; i++) {
+        int result = greater[i] + left;
+        left = 0;
+        if (result > 1) {
+            left = result / 2;
+            vsum.push_back(result - result / 2 * 2);
+        } else {
+            vsum.push_back(result);
+        }
+    }
+    if (left > 0) {
+        vsum.push_back(1);
+    }
+    reverse(vsum.begin(), vsum.end());
+    string result;
+    for (int c : vsum) {
+        result.append(to_string(c));
+    }
+    return result;
+}
+
 // https://leetcode-cn.com/problems/intersection-of-two-arrays/
 vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
     set<int> result;
